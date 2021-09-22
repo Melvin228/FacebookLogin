@@ -1,0 +1,74 @@
+@url = http://localhost:8180/rest/api/player
+@url2 = http://localhost:8180
+
+@player=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWVsdmluIEdhbiIsImVtYWlsIjoibWVsdmluZ2FuMjI5OUB5YWhvby5jb20iLCJmYWNlYm9va0lkIjoiMTAzNjY1NzYyMDY4OTY0IiwiZXhwIjoxNjMyMTk5MDM1LCJpYXQiOjE2MzIxOTU0MzV9.CZASAPGW2CSVofWDlO1WIHzAS91-dYP1t1UEVkGyiTc
+
+###Get request <Users>
+GET {{url}}/ HTTP/1.1
+Content-type:application/json
+
+###Get all the users
+GET {{url}}/users HTTP/1.1
+Content-type:application/json
+
+###Find one by id
+GET {{url}}/user/2 HTTP/1.1
+Content-type:application/json
+
+###Get POST
+GET {{url}}/posts HTTP/1.1
+Content-type:application/json
+
+###ProtectedRoute 
+GET {{url}}/protected HTTP/1.1
+Content-type:application/json
+Authorization: Bearer {{player}}
+
+###Success route for facebook
+GET {{url}}/success HTTP/1.1   
+Content-type:application/json
+Authorization: Bearer {{player}}
+
+### POST
+###Create new user
+POST {{url}}/users HTTP/1.1
+Content-Type: application/json
+
+{  
+   "name":"James Doe",
+    "email":"james_poxhyxm_doe@tfbnw.net"
+    
+}
+
+###Login
+POST {{url2}}/validateUser HTTP/1.1
+Content-type:application/json
+
+{
+    "name":"James Doe",
+    "email":"james_poxhyxm_doe@tfbnw.net"
+}
+
+
+###Post post
+POST {{url}}/posts HTTP/1.1
+Content-Type: application/json
+
+{  
+    "userUuid":"3e38e323-6c41-449c-8ae5-87bd4a990f2e",
+    "body":"BLONDE cyka!"
+}
+
+
+###Update User
+PUT {{url}}/users/3e38e323-6c41-449c-8ae5-87bd4a990f2e HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Jennifer Doe",
+    "email": "jenifer@email.com",
+    "role":"admin"
+}
+
+###Delete user 
+DELETE {{url}}/users/e6299fa4-16cb-4ef7-980c-ccb522b716eb HTTP/1.1
