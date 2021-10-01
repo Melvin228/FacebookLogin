@@ -32,6 +32,9 @@ module.exports = (sequelize, DataTypes) => {
       facebookId: {
         type: DataTypes.STRING,
       },
+      googleId: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,

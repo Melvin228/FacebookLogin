@@ -1,7 +1,7 @@
 @url = http://localhost:8180/rest/api/player
 @url2 = http://localhost:8180
 
-@player=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWVsdmluIEdhbiIsImVtYWlsIjoibWVsdmluZ2FuMjI5OUB5YWhvby5jb20iLCJmYWNlYm9va0lkIjoiMTAzNjY1NzYyMDY4OTY0IiwiZXhwIjoxNjMyMTk5MDM1LCJpYXQiOjE2MzIxOTU0MzV9.CZASAPGW2CSVofWDlO1WIHzAS91-dYP1t1UEVkGyiTc
+@player=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lbHZpbmdhbjI4MTFAZ21haWwuY29tIiwiZ29vZ2xlSWQiOiIxMDIzMzE0MjMxODA5Njk1OTU2MTgiLCJleHAiOjE2MzMwNTk0MjgsImlhdCI6MTYzMzA1NTgyOH0.N_Ei2CI4QejzoLso6xvGe00CS1v-3_p4bCyRVzK9Afw
 
 ###Get request <Users>
 GET {{url}}/ HTTP/1.1

@@ -1,18 +1,22 @@
 const express = require("express");
-
 const Router = express.Router();
-
 const passport = require("passport");
 const db = require("../models");
+require("dotenv").config();
 
 const FBAuth = passport.authenticate("facebook", {
   scope: "email",
+});
+
+const GoogleOAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
 });
 const JWTAuth = passport.authenticate("user-jwt", { session: false });
 
 const { sequelize, User } = require("../models");
 const jwt = require("jsonwebtoken");
 
+require("../passportLib/google.js");
 require("../passportLib/facebook.js");
 require("../passportLib/jwt")(db, passport);
 require("dotenv").config();
@@ -38,10 +42,39 @@ Router.get(
 );
 
 /*
+  Route: /rest/api/player/auth/google
+  Description:Call to google route
+*/
+Router.get("/auth/google", GoogleOAuth);
+
+/*
+  Route: /rest/api/player/auth/google/callback
+  Description:Callback from google
+*/
+Router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  function (req, res) {
+    // Successful authentication, redirect to the success page.
+    console.log(req.user);
+    const token = jwt.sign(
+      {
+        email: req.user.email,
+        googleId: req.user.googleId,
+        exp: Math.floor(Date.now() / 1000 + 60 * 60),
+      },
+      process.env.JwtSECRET
+    );
+    res.json({ success: true, token: token });
+    // res.redirect("/rest/api/player/success");
+  }
+);
+
+/*
   Route: /rest/api/player/login
   Description:Success callback after the facebook login
 */
-Router.get("/success", JWTAuth, verifyToken, async (req, res) => {
+Router.get("/success", verifyToken, async (req, res) => {
   // console.log(req.headers);
   jwt.verify(req.token, process.env.JwtSECRET, (err, authData) => {
     if (err) {

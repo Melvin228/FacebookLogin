@@ -23,6 +23,9 @@ module.exports = {
       facebookId: {
         type: DataTypes.STRING,
       },
+      googleId: {
+        type: DataTypes.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
