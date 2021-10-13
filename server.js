@@ -3,6 +3,8 @@ const passport = require("passport");
 const app = express();
 const db = require("./models");
 const morgan = require("morgan");
+const session = require("express-session");
+
 require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
@@ -16,12 +18,12 @@ const { sequelize, User } = require("./models");
 app.use(express.json());
 app.use(passport.initialize());
 app.use(morgan("tiny"));
+app.use(session({ secret: "keyboard cat", cookie: { maxAge: 60000 } }));
+app.use(express.urlencoded({ extended: true }));
 
 //Player routes
 const Player = require("./routes/player");
 app.use("/rest/api/player", Player);
-
-app.use(express.urlencoded({ extended: true }));
 
 //db
 app.db = db;

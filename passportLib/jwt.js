@@ -6,8 +6,6 @@ const User = require("../models/User").User;
 
 const { sequelize } = require("../models/User");
 
-require("dotenv").config();
-
 const opt = {};
 
 opt.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();

@@ -1,6 +1,6 @@
 const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
-require("dotenv").config();
+
 const jwt = require("jsonwebtoken");
 
 //Load user model
@@ -12,13 +12,15 @@ passport.use(
       clientID: process.env.CLIENT_ID_FB,
       clientSecret: process.env.CLIENT_SECRET_FB,
       callbackURL:
-        "http://localhost:8180/rest/api/player/auth/facebook/callback",
-      // passReqToCallback: true,
+        "http://localhost:5500/rest/api/player/auth/facebook/callback",
+      passReqToCallback: true,
       profileFields: ["id", "displayName", "name", "gender", "email"],
     },
-    function (accessToken, refreshToken, profile, done) {
+    function (req, accessToken, refreshToken, profile, done) {
       process.nextTick(async function () {
-        console.log(accessToken);
+        // console.log(req);
+        // console.log(profile);
+        // console.log(accessToken);
         let email = profile.emails[0].value;
         let facebookId = profile.id;
         let name = `${profile.name.givenName} ${profile.name.familyName}`;
@@ -42,6 +44,7 @@ passport.use(
             //Step 3: If user exist in the database without facebook, check if he has facebook
             //If he does, proceed to sign the jwt token and provide access to protected route
             if (fbId) {
+              // console.log(fbId.id);
               console.log("Facebook verification");
               const token = jwt.sign(
                 {
@@ -57,7 +60,7 @@ passport.use(
 
               return done(null, player, accessToken, token);
 
-              //Step 4 : If the does not have a faceboo1kId, proceed to update the database with the facebookId,
+              //Step 4 : If the user does not have a faceboo1kId, proceed to update the database with the facebookId,
               //in the live server, might need to generate random password for the user.
               // then sign the jwt token with the relevant payload.
             } else {
@@ -92,9 +95,9 @@ passport.use(
             //Step 6 : If the user email , and name does not exist at all, indicating new user , then proceed to create new user.
             //Sign in the jwt token
           } else {
-            console.log(
-              "Checking to see if the facebookId exist and the email does not exist"
-            );
+            // console.log(
+            //   "Checking to see if the facebookId exist and the email does not exist"
+            // );
             const fbId = await User.findOne({
               where: { facebookId },
             });
@@ -112,14 +115,14 @@ passport.use(
               return done(null, fbId, accessToken);
             } else {
               //creating a new user if user does not exist
-              console.log("creating new user", profile);
+              // console.log("creating new user", profile);
               var newUser = User.create({
                 email,
                 facebookId,
                 name,
               });
 
-              console.log(newUser);
+              // console.log(newUser);
 
               const token = jwt.sign(
                 {

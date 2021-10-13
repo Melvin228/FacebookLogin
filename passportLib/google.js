@@ -1,6 +1,5 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const { sequelize, User } = require("../models");
@@ -14,11 +13,13 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID_GOOGLE,
       clientSecret: process.env.CLIENT_SECRET_GOOGLE,
-      callbackURL: "http://localhost:8180/rest/api/player/auth/google/callback",
-      //   profileFields: ["id", "displayName", "name", "gender", "email"],
+      callbackURL: "http://localhost:5500/rest/api/player/auth/google/callback",
+      // profileFields: ["id", "displayName", "name", "gender", "email"],
     },
     function (accessToken, refreshToken, profile, done) {
       process.nextTick(async function () {
+        console.log("This is the profile details", profile);
+        console.log(profile.gender);
         let email = profile.emails[0].value;
         let googleId = profile.id;
         let name = profile.displayName;

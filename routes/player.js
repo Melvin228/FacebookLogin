@@ -2,14 +2,14 @@ const express = require("express");
 const Router = express.Router();
 const passport = require("passport");
 const db = require("../models");
-require("dotenv").config();
+const session = require("express-session");
 
-const FBAuth = passport.authenticate("facebook", {
-  scope: "email",
-});
+// Router.use(session({ secret: "keyboard-cat", cookie: { maxAge: 60000 } }));
+
+//challenge route
 
 const GoogleOAuth = passport.authenticate("google", {
-  scope: ["profile", "email"],
+  scope: ["email", "profile"],
 });
 const JWTAuth = passport.authenticate("user-jwt", { session: false });
 
@@ -19,13 +19,13 @@ const jwt = require("jsonwebtoken");
 require("../passportLib/google.js");
 require("../passportLib/facebook.js");
 require("../passportLib/jwt")(db, passport);
-require("dotenv").config();
+
 /*
   Route: /rest/api/player/auth/facebook/
   Description:API TO CALL TO FACEBOOK
 */
 
-Router.get("/auth/facebook", FBAuth);
+Router.get("/auth/facebook/", myCustomFacebookAuthenticator);
 
 /*
   Route: /rest/api/player/auth/facebook/callback
@@ -33,19 +33,63 @@ Router.get("/auth/facebook", FBAuth);
 */
 Router.get(
   "/auth/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  passport.authenticate(
+    "facebook",
+    // successReturnToOrRedirect: "/rest/api/player/success",
+    { failureRedirect: "/" }
+  ),
   function (req, res) {
+    console.log(req.params);
+    console.log(req.query);
+    console.log(req.query.state);
+    let z = req.query.state;
+    let x = req.query.state.split("=");
+
+    let y = req.query.state.substring(4, req.query.state.length - 1);
+    console.log(z.charAt(req.query.state.length - 1));
+    console.log(JSON.stringify(z));
+    console.log(req.query.state);
+    console.log(z.indexOf("st"));
+    console.log(x);
+    console.log(y);
+
+    console.log("The new array is ", x[0], x[1]);
+    // console.log(JSON.parse(req.query.state));
+    // console.log(req.session.oauth2return);
+    // const redirect = `/rest/api/player/${req.session.oauth2return}` || "/";
+    // console.log(redirect);
+    // delete req.session.oauth2return;
     // Successful authentication, redirect to the success page.
-    res.redirect("/rest/api/player/success");
-  },
-  FBAuth
-);
+    res.redirect("/challenge");
+  }
+); // successReturnToOrRedirect: "/rest/api/player/success",
+
+Router.get("/success", (req, res) => {
+  console.log(req);
+  console.log(req.user);
+  res.end("Success route");
+});
+
+Router.get("/challenge", (req, res) => {
+  res.end("Landed on the challenge page");
+});
 
 /*
   Route: /rest/api/player/auth/google
   Description:Call to google route
 */
-Router.get("/auth/google", GoogleOAuth);
+Router.get(
+  "/auth/google",
+  (req, res, next) => {
+    console.log("The request query is ", req.query.returnPath);
+    console.log(req.session);
+    if (req.query.returnPath) {
+      console.log("Wow, SHITTTTTTTTTT");
+    }
+    next();
+  },
+  GoogleOAuth
+);
 
 /*
   Route: /rest/api/player/auth/google/callback
@@ -53,7 +97,7 @@ Router.get("/auth/google", GoogleOAuth);
 */
 Router.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google"),
   function (req, res) {
     // Successful authentication, redirect to the success page.
     console.log(req.user);
@@ -179,6 +223,23 @@ function verifyToken(req, res, next) {
   } else {
     res.sendStatus(403);
   }
+}
+
+function passInformation(req, res, next) {
+  console.log("passing through this function");
+  if (req.user) {
+    req.session.user = req.user;
+    next();
+  } else {
+    return res.end("Request.user does not exist");
+  }
+}
+
+function myCustomFacebookAuthenticator(req, res, next) {
+  passport.authenticate("facebook", {
+    scope: "email",
+    state: `{st=${req.query.returnPath}, ds =123456}`,
+  })(req, res, next);
 }
 
 module.exports = Router;
